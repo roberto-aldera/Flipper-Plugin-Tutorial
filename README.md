@@ -3,6 +3,8 @@
 
 🏗️ This fork updates the original repo so it compiles on "recent" (v0.84) [official Flipper Zero firmware](https://github.com/flipperdevices/flipperzero-firmware/tree/dev). API-breaking changes are expected prior to v1.0, so we've got to account for that.
 
+Using [flipperzero-ufbt](https://github.com/flipperdevices/flipperzero-ufbt) to compile and flash this to your device is pretty straightforward, see their readme for details.
+
 ---
 Tutorial on how to build a basic "Hello world" plugin for Flipper Zero.
 
