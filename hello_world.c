@@ -20,6 +20,7 @@ typedef struct {
 } PluginState;
 
 static void render_callback(Canvas *const canvas, void *ctx) {
+  furi_assert(ctx);
   PluginState *plugin_state = ctx;
   furi_mutex_acquire(plugin_state->mutex, FuriWaitForever);
   if (plugin_state == NULL) {
@@ -48,13 +49,16 @@ static void hello_world_state_init(PluginState *const plugin_state) {
   plugin_state->y = 30;
 }
 
-int32_t hello_world_app() {
+int32_t hello_world_app(void *p) {
+  UNUSED(p);
+
   FuriMessageQueue *event_queue =
       furi_message_queue_alloc(8, sizeof(PluginEvent));
 
   PluginState *plugin_state = malloc(sizeof(PluginState));
-
   hello_world_state_init(plugin_state);
+
+  plugin_state->mutex = furi_mutex_alloc(FuriMutexTypeNormal);
 
   if (!plugin_state->mutex) {
     FURI_LOG_E("Hello_world", "cannot create mutex\r\n");
@@ -64,7 +68,7 @@ int32_t hello_world_app() {
 
   // Set system callbacks
   ViewPort *view_port = view_port_alloc();
-  view_port_draw_callback_set(view_port, render_callback, &plugin_state);
+  view_port_draw_callback_set(view_port, render_callback, plugin_state);
   view_port_input_callback_set(view_port, input_callback, event_queue);
 
   // Open GUI and register view_port
@@ -118,6 +122,7 @@ int32_t hello_world_app() {
   view_port_free(view_port);
   furi_message_queue_free(event_queue);
   furi_mutex_free(plugin_state->mutex);
+  free(plugin_state);
 
   return 0;
 }
